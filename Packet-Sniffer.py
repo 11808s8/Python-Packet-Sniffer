@@ -122,6 +122,10 @@ def main():
             if(next_header == 58 ):
                 # Defined on https://tools.ietf.org/html/rfc4443#page-3   <--- The same as ICMPv4 :)
                 icmp_packet_template_method(data)
+
+            # TCP
+            if(next_header == 6):
+                tcp_template_method(raw_data, data)
             # version = data[0]
             # print(version)
             # print("Not Converted")
