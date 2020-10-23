@@ -130,7 +130,8 @@ def main():
                 next_header, data = destination_options(data)
             #Routing
             if(next_header == 43 ):
-                pass
+                next_header, data =  routing_header(data)
+                
             #Fragment
             if(next_header == 44 ):
                 pass
@@ -205,6 +206,24 @@ def destination_options(data):
     data = data[:hdr_ext_len_converter(header_length)]
     input()
     return (next_header, data)
+
+def routing_header(data):
+    next_header, header_length, routing_type, segments_left = struct.unpack('! B B B B', data[:4])
+    print("Next header")
+    print(next_header)
+    print("Header Length")
+    print(header_length)
+    print("Routing Type")
+    print(routing_type)
+    print("Segments Left")
+    print(segments_left)
+
+    # header length uses the same definition as HOP BY HOP options
+
+    data = data[:hdr_ext_len_converter(header_length)]
+    input()
+    return (next_header, data)
+
 
 # Unpack Ethernet Frame
 def ethernet_frame(data):
