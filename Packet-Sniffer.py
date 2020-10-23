@@ -166,9 +166,32 @@ def hop_by_hop_options(data):
     print(header_length)
     # print("Options")
     # print(options)
+
+    '''
+    BY DEFINITION ON https://tools.ietf.org/html/rfc8200#section-4.3
+    Hdr Ext Len         8-bit unsigned integer.  Length of the
+                          Hop-by-Hop Options header in 8-octet units,
+                          not including the first 8 octets.
+
+
+                          That is: 1 octet = 8 bits (1 byte)
+                            as it uses 8 octets by default for the number in Hdr Ext len,
+                            from that logic we have:
+                            Hdr Ext Len * 8 
+                            As it does not include the first 8 octets, we have
+                            to add to it
+                            Hdr Ext Len * 8 + 8
+    '''
+
+    data = data[:hdr_ext_len_converter(header_length)]
     input()
     return (next_header, data)
 
+def hdr_ext_len_converter(octets):
+    return hdr_ext_len_converter_raw(octets, 8)
+
+def hdr_ext_len_converter_raw(octets, default_octet_number=8):
+    return int(octets*default_octet_number+8)
 
 # Unpack Ethernet Frame
 def ethernet_frame(data):
