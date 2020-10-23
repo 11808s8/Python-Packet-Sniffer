@@ -39,9 +39,7 @@ def main():
             #     tcp_template_method(raw_data, data)
             # # UDP
             # elif proto == 17:
-            #     src_port, dest_port, length, data = udp_seg(data)
-            #     print(TAB_1 + 'UDP Segment:')
-            #     print(TAB_2 + 'Source Port: {}, Destination Port: {}, Length: {}'.format(src_port, dest_port, length))
+            #     udp_template_method(data)
 
             # # Other IPv4
             # else:
@@ -315,6 +313,11 @@ def tcp_template_method(raw_data, data):
         else:
             print(TAB_2 + 'TCP Data:')
             print(format_output_line(DATA_TAB_3, data))
+
+def udp_template_method(data):
+    src_port, dest_port, length, data = udp_seg(data)
+    print(TAB_1 + 'UDP Segment:')
+    print(TAB_2 + 'Source Port: {}, Destination Port: {}, Length: {}'.format(src_port, dest_port, length))
 
 # Unpacks for any TCP Packet
 def tcp_seg(data):
