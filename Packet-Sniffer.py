@@ -36,29 +36,7 @@ def main():
 
             # # TCP
             # elif proto == 6:
-            #     src_port, dest_port, sequence, acknowledgment, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin = struct.unpack(
-            # '! H H L L H H H H H H', raw_data[:24])
-            #     print(TAB_1 + 'TCP Segment:')
-            #     print(TAB_2 + 'Source Port: {}, Destination Port: {}'.format(src_port, dest_port))
-            #     print(TAB_2 + 'Sequence: {}, Acknowledgment: {}'.format(sequence, acknowledgment))
-            #     print(TAB_2 + 'Flags:')
-            #     print(TAB_3 + 'URG: {}, ACK: {}, PSH: {}'.format(flag_urg, flag_ack, flag_psh))
-            #     print(TAB_3 + 'RST: {}, SYN: {}, FIN:{}'.format(flag_rst, flag_syn, flag_fin))
-
-            #     if len(data) > 0:
-            #         # HTTP
-            #         if src_port == 80 or dest_port == 80:
-            #             print(TAB_2 + 'HTTP Data:')
-            #             try:
-            #                 http = HTTP(data)
-            #                 http_info = str(http.data).split('\n')
-            #                 for line in http_info:
-            #                     print(DATA_TAB_3 + str(line))
-            #             except:
-            #                 print(format_output_line(DATA_TAB_3, data))
-            #         else:
-            #             print(TAB_2 + 'TCP Data:')
-            #             print(format_output_line(DATA_TAB_3, data))
+            #     tcp_template_method(raw_data, data)
             # # UDP
             # elif proto == 17:
             #     src_port, dest_port, length, data = udp_seg(data)
@@ -308,6 +286,31 @@ def icmp_packet_template_method(data):
 def icmp_packet(data):
     icmp_type, code, checksum = struct.unpack('! B B H', data[:4])
     return icmp_type, code, checksum, data[4:]
+
+
+def tcp_template_method(raw_data, data):
+    src_port, dest_port, sequence, acknowledgment, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin = struct.unpack('! H H L L H H H H H H', raw_data[:24])
+    print(TAB_1 + 'TCP Segment:')
+    print(TAB_2 + 'Source Port: {}, Destination Port: {}'.format(src_port, dest_port))
+    print(TAB_2 + 'Sequence: {}, Acknowledgment: {}'.format(sequence, acknowledgment))
+    print(TAB_2 + 'Flags:')
+    print(TAB_3 + 'URG: {}, ACK: {}, PSH: {}'.format(flag_urg, flag_ack, flag_psh))
+    print(TAB_3 + 'RST: {}, SYN: {}, FIN:{}'.format(flag_rst, flag_syn, flag_fin))
+
+    if len(data) > 0:
+        # HTTP
+        if src_port == 80 or dest_port == 80:
+            print(TAB_2 + 'HTTP Data:')
+            try:
+                http = HTTP(data)
+                http_info = str(http.data).split('\n')
+                for line in http_info:
+                    print(DATA_TAB_3 + str(line))
+            except:
+                print(format_output_line(DATA_TAB_3, data))
+        else:
+            print(TAB_2 + 'TCP Data:')
+            print(format_output_line(DATA_TAB_3, data))
 
 # Unpacks for any TCP Packet
 def tcp_seg(data):
