@@ -24,55 +24,101 @@ def main():
         print(TAB_1 + 'Destination: {}, Source: {}, Protocol: {}'.format(dest_mac, src_mac, eth_proto))
 
         if eth_proto == 8:
-            (version, header_length, ttl, proto, src, target, data) = ipv4_Packet(data)
-            print(TAB_1 + "IPV4 Packet:")
-            print(TAB_2 + 'Version: {}, Header Length: {}, TTL: {}'.format(version, header_length, ttl))
-            print(TAB_3 + 'protocol: {}, Source: {}, Target: {}'.format(proto, src, target))
+            pass
+            # (version, header_length, ttl, proto, src, target, data) = ipv4_Packet(data)
+            # print(TAB_1 + "IPV4 Packet:")
+            # print(TAB_2 + 'Version: {}, Header Length: {}, TTL: {}'.format(version, header_length, ttl))
+            # print(TAB_3 + 'protocol: {}, Source: {}, Target: {}'.format(proto, src, target))
 
-            # ICMP
-            if proto == 1:
-                icmp_type, code, checksum, data = icmp_packet(data)
-                print(TAB_1 + 'ICMP Packet:')
-                print(TAB_2 + 'Type: {}, Code: {}, Checksum: {},'.format(icmp_type, code, checksum))
-                print(TAB_2 + 'ICMP Data:')
-                print(format_output_line(DATA_TAB_3, data))
+            # # ICMP
+            # if proto == 1:
+            #     icmp_type, code, checksum, data = icmp_packet(data)
+            #     print(TAB_1 + 'ICMP Packet:')
+            #     print(TAB_2 + 'Type: {}, Code: {}, Checksum: {},'.format(icmp_type, code, checksum))
+            #     print(TAB_2 + 'ICMP Data:')
+            #     print(format_output_line(DATA_TAB_3, data))
 
-            # TCP
-            elif proto == 6:
-                src_port, dest_port, sequence, acknowledgment, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin = struct.unpack(
-            '! H H L L H H H H H H', raw_data[:24])
-                print(TAB_1 + 'TCP Segment:')
-                print(TAB_2 + 'Source Port: {}, Destination Port: {}'.format(src_port, dest_port))
-                print(TAB_2 + 'Sequence: {}, Acknowledgment: {}'.format(sequence, acknowledgment))
-                print(TAB_2 + 'Flags:')
-                print(TAB_3 + 'URG: {}, ACK: {}, PSH: {}'.format(flag_urg, flag_ack, flag_psh))
-                print(TAB_3 + 'RST: {}, SYN: {}, FIN:{}'.format(flag_rst, flag_syn, flag_fin))
+            # # TCP
+            # elif proto == 6:
+            #     src_port, dest_port, sequence, acknowledgment, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin = struct.unpack(
+            # '! H H L L H H H H H H', raw_data[:24])
+            #     print(TAB_1 + 'TCP Segment:')
+            #     print(TAB_2 + 'Source Port: {}, Destination Port: {}'.format(src_port, dest_port))
+            #     print(TAB_2 + 'Sequence: {}, Acknowledgment: {}'.format(sequence, acknowledgment))
+            #     print(TAB_2 + 'Flags:')
+            #     print(TAB_3 + 'URG: {}, ACK: {}, PSH: {}'.format(flag_urg, flag_ack, flag_psh))
+            #     print(TAB_3 + 'RST: {}, SYN: {}, FIN:{}'.format(flag_rst, flag_syn, flag_fin))
 
-                if len(data) > 0:
-                    # HTTP
-                    if src_port == 80 or dest_port == 80:
-                        print(TAB_2 + 'HTTP Data:')
-                        try:
-                            http = HTTP(data)
-                            http_info = str(http.data).split('\n')
-                            for line in http_info:
-                                print(DATA_TAB_3 + str(line))
-                        except:
-                            print(format_output_line(DATA_TAB_3, data))
-                    else:
-                        print(TAB_2 + 'TCP Data:')
-                        print(format_output_line(DATA_TAB_3, data))
-            # UDP
-            elif proto == 17:
-                src_port, dest_port, length, data = udp_seg(data)
-                print(TAB_1 + 'UDP Segment:')
-                print(TAB_2 + 'Source Port: {}, Destination Port: {}, Length: {}'.format(src_port, dest_port, length))
+            #     if len(data) > 0:
+            #         # HTTP
+            #         if src_port == 80 or dest_port == 80:
+            #             print(TAB_2 + 'HTTP Data:')
+            #             try:
+            #                 http = HTTP(data)
+            #                 http_info = str(http.data).split('\n')
+            #                 for line in http_info:
+            #                     print(DATA_TAB_3 + str(line))
+            #             except:
+            #                 print(format_output_line(DATA_TAB_3, data))
+            #         else:
+            #             print(TAB_2 + 'TCP Data:')
+            #             print(format_output_line(DATA_TAB_3, data))
+            # # UDP
+            # elif proto == 17:
+            #     src_port, dest_port, length, data = udp_seg(data)
+            #     print(TAB_1 + 'UDP Segment:')
+            #     print(TAB_2 + 'Source Port: {}, Destination Port: {}, Length: {}'.format(src_port, dest_port, length))
 
-            # Other IPv4
-            else:
-                print(TAB_1 + 'Other IPv4 Data:')
-                print(format_output_line(DATA_TAB_2, data))
+            # # Other IPv4
+            # else:
+            #     print(TAB_1 + 'Other IPv4 Data:')
+            #     print(format_output_line(DATA_TAB_2, data))
+        elif(eth_proto == 56710):
+            print("IPV6")
+            print("eth prot {}".format(eth_proto))
+            print(data[:1])
+            print("\ndata\n")
+            print(data)
+            first_32_bits, \
+                    payload_length,\
+                    next_header, \
+                    hop_limit = struct.unpack('! IHBB', data[:8])
+            # version = struct.unpack('! B', data[:1])
 
+            version = first_32_bits >> 28
+            traffic_class = (first_32_bits >> 20) & 255
+            flow_label = first_32_bits & 1048575
+            
+            # flow_label
+            # BITS
+                            #4+8+20+16+8+8
+
+            print("First word")
+            print(bin(first_32_bits))
+            print("Version")
+            print(version)
+            print("Traffic Class")
+            print(bin(traffic_class))
+            print("Flow Label")
+            print(bin(flow_label))
+            print("Payload Length")
+            print(bin(payload_length))
+            print("Next Header")
+            print(next_header)
+            proto = next_header
+            print("Hop Limit")
+            print(bin(hop_limit))
+            
+            # version = data[0]
+            # print(version)
+            # print("Not Converted")
+            # print(bin(version))
+            # version = version >> 4
+            # print("Converted")
+            # print(version)
+            input()
+            # version, traffic_class, flow_label, payload_length,next_header, hop_limit = struct.unpack('! H', data[:40])
+            # ttl, proto, src, target = struct.unpack('! 8x B B 2x 4s 4s', data[:20])
         else:
             print('Ethernet Data:')
             print(format_output_line(DATA_TAB_1, data))
