@@ -48,7 +48,7 @@ def main():
             
             next_header, data = ipv6_header(data)
 
-            # ORDER DEFINED ON RFC8200
+            # ORDER DEFINED ON RFC8200 - https://tools.ietf.org/html/rfc8200
             #Hop-by-Hop Options
             if(next_header == 0 ):
                 next_header, data = hop_by_hop_options(data)
