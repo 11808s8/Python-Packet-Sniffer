@@ -32,11 +32,7 @@ def main():
 
             # # ICMP
             # if proto == 1:
-            #     icmp_type, code, checksum, data = icmp_packet(data)
-            #     print(TAB_1 + 'ICMP Packet:')
-            #     print(TAB_2 + 'Type: {}, Code: {}, Checksum: {},'.format(icmp_type, code, checksum))
-            #     print(TAB_2 + 'ICMP Data:')
-            #     print(format_output_line(DATA_TAB_3, data))
+            #     icmp_packet_template_method(data)
 
             # # TCP
             # elif proto == 6:
@@ -146,7 +142,8 @@ def main():
                 print("No next header")
             #ICMPv6
             if(next_header == 58 ):
-                pass
+                # Defined on https://tools.ietf.org/html/rfc4443#page-3   <--- The same as ICMPv4 :)
+                icmp_packet_template_method(data)
             # version = data[0]
             # print(version)
             # print("Not Converted")
@@ -275,6 +272,7 @@ def authentication_header(data):
 def encapsuling_header(data):
     return (59, data) # returns a no next header, as this one is hard as heck to calculate :). More info on: https://tools.ietf.org/html/rfc4303
 
+
 # Unpack Ethernet Frame
 def ethernet_frame(data):
     dest_mac, src_mac, proto = struct.unpack('! 6s 6s H', data[:14])
@@ -298,6 +296,13 @@ def ipv4_Packet(data):
 def ipv4(addr):
     return '.'.join(map(str, addr))
 
+
+def icmp_packet_template_method(data):
+    icmp_type, code, checksum, data = icmp_packet(data)
+    print(TAB_1 + 'ICMP Packet:')
+    print(TAB_2 + 'Type: {}, Code: {}, Checksum: {},'.format(icmp_type, code, checksum))
+    print(TAB_2 + 'ICMP Data:')
+    print(format_output_line(DATA_TAB_3, data))
 
 # Unpacks for any ICMP Packet
 def icmp_packet(data):
