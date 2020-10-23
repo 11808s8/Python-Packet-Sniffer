@@ -137,6 +137,7 @@ def main():
                 next_header, data =  fragment_header(data)
             #Authentication
             if(next_header == 51 ):
+                next_header, data =  authentication_header(data)
                 pass
             #Encapsulating Security Payload
             if(next_header == 50 ):
@@ -190,6 +191,9 @@ def hop_by_hop_options(data):
 
 def hdr_ext_len_converter(octets):
     return hdr_ext_len_converter_raw(octets, 8)
+
+def hdr_ext_len_converter_4_octets(octets):
+    return hdr_ext_len_converter_raw(octets, 4)
 
 def hdr_ext_len_converter_raw(octets, default_octet_number=8):
     return int(octets*default_octet_number+8)
@@ -248,6 +252,24 @@ def fragment_header(data):
     return (next_header,data)
 
 
+# Defined on https://tools.ietf.org/html/rfc4302
+def authentication_header(data):
+    next_header, payload_length, reserved, spi, sequence_number = struct.unpack('! B B H I I', data[:12])
+    print("Next header")
+    print(next_header)
+    print("Payload Length")
+    print(payload_length)
+    print("Reserved")
+    print(reserved)
+    print("Security Parameters Index")
+    print(spi)
+    print("Sequence Number Field)
+    print(sequence_number)
+    data = data[:hdr_ext_len_converter_4_octets(payload_length)]
+    input()
+
+    return (next_header, data)
+    
 
 
 # Unpack Ethernet Frame
