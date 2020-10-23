@@ -117,29 +117,31 @@ def main():
             print("Dest Address")
             print(dst_address)
 
-
+            data = data[40:]
             #@TODO: Put UDP and TCP here as well (from IPv4 above)
 
+            # ORDER DEFINED ON RFC8200
             #Hop-by-Hop Options
             if(next_header == 0 ):
-                pass
-            #Fragment
-            elif(next_header == 44 ):
-                pass
+                next_header, data = hop_by_hop_options(data)
+                # pass
             #Destination Options
-            elif(next_header == 60 ):
+            if(next_header == 60 ):
                 pass
             #Routing
-            elif(next_header == 43 ):
+            if(next_header == 43 ):
+                pass
+            #Fragment
+            if(next_header == 44 ):
                 pass
             #Authentication
-            elif(next_header == 51 ):
+            if(next_header == 51 ):
                 pass
             #Encapsulating Security Payload
-            elif(next_header == 50 ):
+            if(next_header == 50 ):
                 pass
             #ICMPv6
-            elif(next_header == 58 ):
+            if(next_header == 58 ):
                 pass
             # version = data[0]
             # print(version)
@@ -155,6 +157,17 @@ def main():
             print('Ethernet Data:')
             print(format_output_line(DATA_TAB_1, data))
 
+
+def hop_by_hop_options(data):
+    next_header, header_length = struct.unpack('! B B', data[:2])
+    print("Next header")
+    print(next_header)
+    print("Header Length")
+    print(header_length)
+    # print("Options")
+    # print(options)
+    input()
+    return (next_header, data)
 
 
 # Unpack Ethernet Frame
