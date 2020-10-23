@@ -23,7 +23,7 @@ def main():
         print('\n Ethernet Frame: ')
         print(TAB_1 + 'Destination: {}, Source: {}, Protocol: {}'.format(dest_mac, src_mac, eth_proto))
 
-        if eth_proto == 8:
+        if eth_proto == 8: # IPv4
             (version, header_length, ttl, proto, src, target, data) = ipv4_Packet(data)
             print(TAB_1 + "IPV4 Packet:")
             print(TAB_2 + 'Version: {}, Header Length: {}, TTL: {}'.format(version, header_length, ttl))
@@ -44,7 +44,7 @@ def main():
             else:
                 print(TAB_1 + 'Other IPv4 Data:')
                 print(format_output_line(DATA_TAB_2, data))
-        elif(eth_proto == 56710):
+        elif(eth_proto == 56710): # IPv6
             
             next_header, data = ipv6_header(data)
 
@@ -81,6 +81,7 @@ def main():
             if(next_header == 6):
                 tcp_template_method(raw_data, data)
 
+            # UDP
             if(next_header == 17):
                 udp_template_method(data)
             
