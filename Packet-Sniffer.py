@@ -45,45 +45,8 @@ def main():
                 print(TAB_1 + 'Other IPv4 Data:')
                 print(format_output_line(DATA_TAB_2, data))
         elif(eth_proto == 56710):
-            print("IPV6")
-            print("eth prot {}".format(eth_proto))
-            print(data[:1])
-            print("\ndata\n")
-            print(data)
-            first_32_bits, \
-                    payload_length,\
-                    next_header, \
-                    hop_limit = struct.unpack('! IHBB', data[:8])
             
-            version = first_32_bits >> 28
-            traffic_class = (first_32_bits >> 20) & 255
-            flow_label = first_32_bits & 1048575
-            
-            print("First word")
-            print(bin(first_32_bits))
-            print("Version")
-            print(version)
-            print("Traffic Class")
-            print(bin(traffic_class))
-            print("Flow Label")
-            print(bin(flow_label))
-            print("Payload Length")
-            print(bin(payload_length))
-            print("Next Header")
-            print(next_header)
-            proto = next_header
-            print("Hop Limit")
-            print(bin(hop_limit))
-            
-            src_address = socket.inet_ntop(socket.AF_INET6, data[8:24])
-            dst_address = socket.inet_ntop(socket.AF_INET6, data[24:40])
-
-            print("Source Address")
-            print(src_address)
-            print("Dest Address")
-            print(dst_address)
-
-            data = data[40:]
+            next_header, data = ipv6_header(data)
 
             # ORDER DEFINED ON RFC8200
             #Hop-by-Hop Options
@@ -126,6 +89,41 @@ def main():
             print('Ethernet Data:')
             print(format_output_line(DATA_TAB_1, data))
 
+def ipv6_header(data):
+    print("IPV6")
+    first_32_bits, \
+            payload_length,\
+            next_header, \
+            hop_limit = struct.unpack('! IHBB', data[:8])
+    
+    version = first_32_bits >> 28
+    traffic_class = (first_32_bits >> 20) & 255
+    flow_label = first_32_bits & 1048575
+    
+    print("Version")
+    print(version)
+    print("Traffic Class")
+    print(traffic_class)
+    print("Flow Label")
+    print(flow_label)
+    print("Payload Length")
+    print(payload_length)
+    print("Next Header")
+    print(next_header)
+    proto = next_header
+    print("Hop Limit")
+    print(bin(hop_limit))
+    
+    src_address = socket.inet_ntop(socket.AF_INET6, data[8:24])
+    dst_address = socket.inet_ntop(socket.AF_INET6, data[24:40])
+
+    print("Source Address")
+    print(src_address)
+    print("Dest Address")
+    print(dst_address)
+
+    data = data[40:]
+    return (next_header, data)
 
 def hop_by_hop_options(data):
     next_header, header_length = struct.unpack('! B B', data[:2])
