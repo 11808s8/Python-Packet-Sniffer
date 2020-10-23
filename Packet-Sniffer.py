@@ -127,7 +127,7 @@ def main():
                 # pass
             #Destination Options
             if(next_header == 60 ):
-                pass
+                next_header, data = destination_options(data)
             #Routing
             if(next_header == 43 ):
                 pass
@@ -192,6 +192,19 @@ def hdr_ext_len_converter(octets):
 
 def hdr_ext_len_converter_raw(octets, default_octet_number=8):
     return int(octets*default_octet_number+8)
+
+def destination_options(data):
+    next_header, header_length = struct.unpack('! B B', data[:2])
+    print("Next header")
+    print(next_header)
+    print("Header Length")
+    print(header_length)
+
+    # header length uses the same definition as HOP BY HOP options
+
+    data = data[:hdr_ext_len_converter(header_length)]
+    input()
+    return (next_header, data)
 
 # Unpack Ethernet Frame
 def ethernet_frame(data):
