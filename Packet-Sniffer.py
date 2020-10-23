@@ -138,10 +138,12 @@ def main():
             #Authentication
             if(next_header == 51 ):
                 next_header, data =  authentication_header(data)
-                pass
+                
             #Encapsulating Security Payload
             if(next_header == 50 ):
-                pass
+                next_header, data =  encapsuling_header(data)
+            if(next_header == 59) :
+                print("No next header")
             #ICMPv6
             if(next_header == 58 ):
                 pass
@@ -270,7 +272,8 @@ def authentication_header(data):
 
     return (next_header, data)
     
-
+def encapsuling_header(data):
+    return (59, data) # returns a no next header, as this one is hard as heck to calculate :). More info on: https://tools.ietf.org/html/rfc4303
 
 # Unpack Ethernet Frame
 def ethernet_frame(data):
