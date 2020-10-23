@@ -24,27 +24,26 @@ def main():
         print(TAB_1 + 'Destination: {}, Source: {}, Protocol: {}'.format(dest_mac, src_mac, eth_proto))
 
         if eth_proto == 8:
-            pass
-            # (version, header_length, ttl, proto, src, target, data) = ipv4_Packet(data)
-            # print(TAB_1 + "IPV4 Packet:")
-            # print(TAB_2 + 'Version: {}, Header Length: {}, TTL: {}'.format(version, header_length, ttl))
-            # print(TAB_3 + 'protocol: {}, Source: {}, Target: {}'.format(proto, src, target))
+            (version, header_length, ttl, proto, src, target, data) = ipv4_Packet(data)
+            print(TAB_1 + "IPV4 Packet:")
+            print(TAB_2 + 'Version: {}, Header Length: {}, TTL: {}'.format(version, header_length, ttl))
+            print(TAB_3 + 'protocol: {}, Source: {}, Target: {}'.format(proto, src, target))
 
-            # # ICMP
-            # if proto == 1:
-            #     icmp_packet_template_method(data)
+            # ICMP
+            if proto == 1:
+                icmp_packet_template_method(data)
 
-            # # TCP
-            # elif proto == 6:
-            #     tcp_template_method(raw_data, data)
-            # # UDP
-            # elif proto == 17:
-            #     udp_template_method(data)
+            # TCP
+            elif proto == 6:
+                tcp_template_method(raw_data, data)
+            # UDP
+            elif proto == 17:
+                udp_template_method(data)
 
-            # # Other IPv4
-            # else:
-            #     print(TAB_1 + 'Other IPv4 Data:')
-            #     print(format_output_line(DATA_TAB_2, data))
+            # Other IPv4
+            else:
+                print(TAB_1 + 'Other IPv4 Data:')
+                print(format_output_line(DATA_TAB_2, data))
         elif(eth_proto == 56710):
             print("IPV6")
             print("eth prot {}".format(eth_proto))
@@ -55,16 +54,11 @@ def main():
                     payload_length,\
                     next_header, \
                     hop_limit = struct.unpack('! IHBB', data[:8])
-            # version = struct.unpack('! B', data[:1])
-
+            
             version = first_32_bits >> 28
             traffic_class = (first_32_bits >> 20) & 255
             flow_label = first_32_bits & 1048575
             
-            # flow_label
-            # BITS
-                            #4+8+20+16+8+8
-
             print("First word")
             print(bin(first_32_bits))
             print("Version")
@@ -90,7 +84,6 @@ def main():
             print(dst_address)
 
             data = data[40:]
-            #@TODO: Put UDP and TCP here as well (from IPv4 above)
 
             # ORDER DEFINED ON RFC8200
             #Hop-by-Hop Options
@@ -127,16 +120,8 @@ def main():
 
             if(next_header == 17):
                 udp_template_method(data)
-            # version = data[0]
-            # print(version)
-            # print("Not Converted")
-            # print(bin(version))
-            # version = version >> 4
-            # print("Converted")
-            # print(version)
-            input()
-            # version, traffic_class, flow_label, payload_length,next_header, hop_limit = struct.unpack('! H', data[:40])
-            # ttl, proto, src, target = struct.unpack('! 8x B B 2x 4s 4s', data[:20])
+            
+            
         else:
             print('Ethernet Data:')
             print(format_output_line(DATA_TAB_1, data))
