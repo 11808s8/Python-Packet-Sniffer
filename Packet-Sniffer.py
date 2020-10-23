@@ -116,6 +116,31 @@ def main():
             print(src_address)
             print("Dest Address")
             print(dst_address)
+
+
+            #@TODO: Put UDP and TCP here as well (from IPv4 above)
+
+            #Hop-by-Hop Options
+            if(next_header == 0 ):
+                pass
+            #Fragment
+            elif(next_header == 44 ):
+                pass
+            #Destination Options
+            elif(next_header == 60 ):
+                pass
+            #Routing
+            elif(next_header == 43 ):
+                pass
+            #Authentication
+            elif(next_header == 51 ):
+                pass
+            #Encapsulating Security Payload
+            elif(next_header == 50 ):
+                pass
+            #ICMPv6
+            elif(next_header == 58 ):
+                pass
             # version = data[0]
             # print(version)
             # print("Not Converted")
