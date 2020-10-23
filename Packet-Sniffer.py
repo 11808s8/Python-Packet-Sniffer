@@ -109,6 +109,13 @@ def main():
             print("Hop Limit")
             print(bin(hop_limit))
             
+            src_address = socket.inet_ntop(socket.AF_INET6, data[8:24])
+            dst_address = socket.inet_ntop(socket.AF_INET6, data[24:40])
+
+            print("Source Address")
+            print(src_address)
+            print("Dest Address")
+            print(dst_address)
             # version = data[0]
             # print(version)
             # print("Not Converted")
