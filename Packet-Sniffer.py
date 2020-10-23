@@ -134,7 +134,7 @@ def main():
                 
             #Fragment
             if(next_header == 44 ):
-                pass
+                next_header, data =  fragment_header(data)
             #Authentication
             if(next_header == 51 ):
                 pass
@@ -223,6 +223,31 @@ def routing_header(data):
     data = data[:hdr_ext_len_converter(header_length)]
     input()
     return (next_header, data)
+
+def fragment_header(data):
+    next_header, reserved, offset_res_flag_word, identification = struct.unpack('! B B H I', data[:8])
+    # 8 + 8 + 13 + 2 + 1 + 32
+    fragment_offset = offset_res_flag_word >> 3
+    res = offset_res_flag_word & 6
+    m_flag = offset_res_flag_word & 1
+    print("Next header")
+    print(next_header)
+    print("Reserved")
+    print(reserved)
+    print("Fragment Offset")
+    print(fragment_offset)
+    print("Res")
+    print(res)
+    print("M Flag")
+    print(m_flag)
+    print("Identification")
+    print(identification)
+
+    data = data[8:]
+    input()
+    return (next_header,data)
+
+
 
 
 # Unpack Ethernet Frame
