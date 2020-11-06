@@ -101,39 +101,20 @@ def ipv6_header(data):
     traffic_class = (first_32_bits >> 20) & 255
     flow_label = first_32_bits & 1048575
     
-    print("Version")
-    print(version)
-    print("Traffic Class")
-    print(traffic_class)
-    print("Flow Label")
-    print(flow_label)
-    print("Payload Length")
-    print(payload_length)
-    print("Next Header")
-    print(next_header)
-    proto = next_header
-    print("Hop Limit")
-    print(bin(hop_limit))
-    
     src_address = socket.inet_ntop(socket.AF_INET6, data[8:24])
     dst_address = socket.inet_ntop(socket.AF_INET6, data[24:40])
 
-    print("Source Address")
-    print(src_address)
-    print("Dest Address")
-    print(dst_address)
-
+    print(TAB_1 + "IPV6 Packet:")
+    print(TAB_2 + "Version: {}, Traffic Class: {}, Flow Label: {}".format(version, traffic_class, flow_label))
+    print(TAB_2 + "Payload Length: {}, Next Header: {}, Hop Limit: {}".format(payload_length, next_header, hop_by_hop_options))
+    print(TAB_3 + "Source Address: {}".format(src_address))
+    print(TAB_3 + "Destination Address: {}".format(dst_address))
+    
     data = data[40:]
     return (next_header, data)
 
 def hop_by_hop_options(data):
     next_header, header_length = struct.unpack('! B B', data[:2])
-    print("Next header")
-    print(next_header)
-    print("Header Length")
-    print(header_length)
-    # print("Options")
-    # print(options)
 
     '''
     BY DEFINITION ON https://tools.ietf.org/html/rfc8200#section-4.3
@@ -151,8 +132,10 @@ def hop_by_hop_options(data):
                             Hdr Ext Len * 8 + 8
     '''
 
+    print(TAB_1 + "Hop-by-hop options:")
+    print(TAB_2 + "Next Header: {}, Header Length: {}".format(next_header, header_length))
+
     data = data[:hdr_ext_len_converter(header_length)]
-    input()
     return (next_header, data)
 
 def hdr_ext_len_converter(octets):
@@ -166,10 +149,9 @@ def hdr_ext_len_converter_raw(octets, default_octet_number=8):
 
 def destination_options(data):
     next_header, header_length = struct.unpack('! B B', data[:2])
-    print("Next header")
-    print(next_header)
-    print("Header Length")
-    print(header_length)
+    
+    print(TAB_1 + "Destination options:")
+    print(TAB_2 + "Next Header: {}, Header Length: {}".format(next_header, header_length))
 
     # header length uses the same definition as HOP BY HOP options
 
@@ -179,64 +161,44 @@ def destination_options(data):
 
 def routing_header(data):
     next_header, header_length, routing_type, segments_left = struct.unpack('! B B B B', data[:4])
-    print("Next header")
-    print(next_header)
-    print("Header Length")
-    print(header_length)
-    print("Routing Type")
-    print(routing_type)
-    print("Segments Left")
-    print(segments_left)
 
     # header length uses the same definition as HOP BY HOP options
 
+    print(TAB_1 + "Routing Header:")
+    print(TAB_2 + "Header Length: {}, Routing Type: {}, Segments Left: {}".format(next_header, routing_type,segments_left))
+
     data = data[:hdr_ext_len_converter(header_length)]
-    input()
     return (next_header, data)
 
 def fragment_header(data):
     next_header, reserved, offset_res_flag_word, identification = struct.unpack('! B B H I', data[:8])
-    # 8 + 8 + 13 + 2 + 1 + 32
+    
     fragment_offset = offset_res_flag_word >> 3
     res = offset_res_flag_word & 6
     m_flag = offset_res_flag_word & 1
-    print("Next header")
-    print(next_header)
-    print("Reserved")
-    print(reserved)
-    print("Fragment Offset")
-    print(fragment_offset)
-    print("Res")
-    print(res)
-    print("M Flag")
-    print(m_flag)
-    print("Identification")
-    print(identification)
+    
+    
+    print(TAB_1 + "Fragment Header:")
+    print(TAB_2 + 'Next Header: {}, Reserved: {}, Fragment Offset: {}'.format(next_header, reserved, fragment_offset))
+    print(TAB_3 + 'Res: {}, M Flag: {}, Identification: {}'.format(res, m_flag, identification))
 
     data = data[8:]
-    input()
     return (next_header,data)
 
 
 # Defined on https://tools.ietf.org/html/rfc4302
 def authentication_header(data):
     next_header, payload_length, reserved, spi, sequence_number = struct.unpack('! B B H I I', data[:12])
-    print("Next header")
-    print(next_header)
-    print("Payload Length")
-    print(payload_length)
-    print("Reserved")
-    print(reserved)
-    print("Security Parameters Index")
-    print(spi)
-    print("Sequence Number Field)
-    print(sequence_number)
+    print(TAB_1 + "Authentication Header:")
+    print(TAB_2 + 'Next Header: {}, Payload Length: {}, Reserved: {}'.format(next_header, payload_length, reserved))
+    print(TAB_3 + 'Security Parameters Index: {}, Sequence Number Field: {}'.format(spi, sequence_number))
+
     data = data[:hdr_ext_len_converter_4_octets(payload_length)]
-    input()
 
     return (next_header, data)
     
 def encapsuling_header(data):
+    print("No next header")
     return (59, data) # returns a no next header, as this one is hard as heck to calculate :). More info on: https://tools.ietf.org/html/rfc4303
 
 
@@ -308,8 +270,8 @@ def udp_template_method(data):
 
 # Unpacks for any TCP Packet
 def tcp_seg(data):
-    (src_port, destination_port, sequence, acknowledgenment, offset_reserv_flag) = struct.unpack('! H H L L H', data[:14])
-    offset = (offset_reserv_flag >> 12) * 4
+    (src_port, destination_port, sequence, acknowledgement, offset_reserved_flag) = struct.unpack('! H H L L H', data[:14])
+    offset = (offset_reserved_flag >> 12) * 4
     flag_urg = (offset_reserved_flag & 32) >> 5
     flag_ack = (offset_reserved_flag & 32) >>4
     flag_psh = (offset_reserved_flag & 32) >> 3
@@ -317,7 +279,7 @@ def tcp_seg(data):
     flag_syn = (offset_reserved_flag & 32) >> 1
     flag_fin = (offset_reserved_flag & 32) >> 1
 
-    return src_port, dest_port, sequence, acknowledgement, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin, data[offset:]
+    return src_port, destination_port, sequence, acknowledgement, flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin, data[offset:]
 
 
 # Unpacks for any UDP Packet
