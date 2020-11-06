@@ -20,10 +20,11 @@ def main():
         raw_data, addr = conn.recvfrom(65536)
         dest_mac, src_mac, eth_proto, data = ethernet_frame(raw_data)
 
-        print('\n Ethernet Frame: ')
-        print(TAB_1 + 'Destination: {}, Source: {}, Protocol: {}'.format(dest_mac, src_mac, eth_proto))
+        print(TAB_1 + '\n Ethernet Frame: ')
+        print(TAB_2 + 'Destination: {}, Source: {}, Protocol: {}'.format(dest_mac, src_mac, eth_proto))
 
         if eth_proto == 8: # IPv4
+            
             (version, header_length, ttl, proto, src, target, data) = ipv4_Packet(data)
             print(TAB_1 + "IPV4 Packet:")
             print(TAB_2 + 'Version: {}, Header Length: {}, TTL: {}'.format(version, header_length, ttl))
@@ -85,7 +86,8 @@ def main():
             if(next_header == 17):
                 udp_template_method(data)
             
-            
+        elif(eth_proto==1544): # ARP
+            print(TAB_1 + " --- ARP Protocol ---")
         else:
             print('Ethernet Data:')
             print(format_output_line(DATA_TAB_1, data))
@@ -106,7 +108,7 @@ def ipv6_header(data):
 
     print(TAB_1 + "IPV6 Packet:")
     print(TAB_2 + "Version: {}, Traffic Class: {}, Flow Label: {}".format(version, traffic_class, flow_label))
-    print(TAB_2 + "Payload Length: {}, Next Header: {}, Hop Limit: {}".format(payload_length, next_header, hop_by_hop_options))
+    print(TAB_2 + "Payload Length: {}, Next Header: {}, Hop Limit: {}".format(payload_length, next_header, hop_limit))
     print(TAB_3 + "Source Address: {}".format(src_address))
     print(TAB_3 + "Destination Address: {}".format(dst_address))
     
@@ -156,7 +158,6 @@ def destination_options(data):
     # header length uses the same definition as HOP BY HOP options
 
     data = data[:hdr_ext_len_converter(header_length)]
-    input()
     return (next_header, data)
 
 def routing_header(data):
@@ -205,6 +206,7 @@ def encapsuling_header(data):
 # Unpack Ethernet Frame
 def ethernet_frame(data):
     dest_mac, src_mac, proto = struct.unpack('! 6s 6s H', data[:14])
+    print(" REAL PROTOCOL - {}".format(proto))
     return get_mac_addr(dest_mac), get_mac_addr(src_mac), socket.htons(proto), data[14:]
 
     # Format MAC Address
