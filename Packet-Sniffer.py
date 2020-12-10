@@ -39,7 +39,9 @@ def main():
             else:
                 print(TAB_1 + 'Other IPv4 Data:')
                 print(format_output_line(DATA_TAB_2, data))
-        elif(eth_proto == 56710): # IPv6
+        elif(eth_proto == 56710): # IPv6 - It is 56710 as htons converts it FROM 34525 
+                                  # (the original value read - which is 86DD in HEX and indicates the packet being IPv6
+                                  # - more info on https://tools.ietf.org/html/rfc2464#section-3)
             
             next_header, data = ipv6_packets.ipv6_header(data)
 
